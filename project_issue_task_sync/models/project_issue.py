@@ -4,6 +4,16 @@
 from openerp import api, models, fields
 
 
+SYNCED_FIELDS = [
+    'stage_id',
+    'user_id',
+    'name',
+    'description',
+    'project_id',
+    'date_deadline',
+]
+
+
 class ProjectIssue(models.Model):
     _inherit = 'project.issue'
 
@@ -13,16 +23,16 @@ class ProjectIssue(models.Model):
 
     def get_changed_vals(self, origin, paired):
         vals = {}
-        if paired.stage_id != origin.stage_id:
-            vals['stage_id'] = origin.stage_id.id
-        if paired.user_id != origin.user_id:
-            vals['user_id'] = origin.user_id.id
-        if paired.name != origin.name:
-            vals['name'] = origin.name
-        if paired.description != origin.description:
-            vals['description'] = origin.description
-        if paired.project_id != origin.project_id:
-            vals['project_id'] = origin.project_id.id
+        for _field in SYNCED_FIELDS:
+            original_value = getattr(origin, _field)
+            if getattr(paired, _field) != original_value:
+                if isinstance(original_value, models.Model):
+                    destination_value = original_value.id
+                else:
+                    destination_value = original_value
+                vals[_field] = destination_value
+                if _field == 'project_id' and 'analytic_account_id' in paired._model._fields:
+                    vals['analytic_account_id'] = origin.project_id.analytic_account_id.id
         return vals
 
     def get_or_create_binded_task(self):
