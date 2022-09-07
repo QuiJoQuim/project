@@ -35,7 +35,7 @@ class ProjectTask(models.Model):
             "remaining_hours",
             "name",
             "planned_time",
-            "user_ids",
+            "user_id",
         ]
 
     def write(self, values):
@@ -51,18 +51,17 @@ class ProjectTask(models.Model):
             self._update_forecast_lines()
         return res
 
-    @api.onchange("user_ids")
-    def onchange_user_ids(self):
+    @api.onchange("user_id")
+    def onchange_user_id(self):
         for task in self:
-            if not task.user_ids:
+            if not task.user_id:
                 continue
             if task.forecast_role_id:
                 continue
-            employees = task.mapped("user_ids.employee_id")
-            for employee in employees:
-                if employee.main_role_id:
-                    task.forecast_role_id = employee.main_role_id
-                    break
+            employee = task.user_id.employee_id
+            if employee.main_role_id:
+                task.forecast_role_id = employee.main_role_id
+                break
 
     def _update_forecast_lines(self):
         today = fields.Date.context_today(self)
@@ -73,15 +72,11 @@ class ProjectTask(models.Model):
             [("res_id", "in", self.ids), ("res_model", "=", self._name)]
         ).unlink()
         for task in self:
+            forecast_type = "forecast"
             if not task.forecast_role_id:
                 _logger.info("skip task %s: no forecast role", task)
                 continue
-            elif task.project_id.stage_id:
-                forecast_type = task.project_id.stage_id.forecast_line_type
-                if not forecast_type:
-                    _logger.info("skip task %s: no forecast for project state", task)
-                    continue  # closed / cancelled stage
-            elif task.sale_line_id:
+            if task.sale_line_id:
                 sale_state = task.sale_line_id.state
                 if sale_state == "cancel":
                     _logger.info("skip task %s: cancelled sale", task)
@@ -109,7 +104,7 @@ class ProjectTask(models.Model):
                 continue
             date_start = max(today, task.forecast_date_planned_start)
             date_end = max(today, task.forecast_date_planned_end)
-            employee_ids = task.mapped("user_ids.employee_id").ids
+            employee_ids = task.mapped("user_id.employee_id").ids
             if not employee_ids:
                 employee_ids = [False]
             _logger.debug(
