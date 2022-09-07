@@ -22,5 +22,6 @@
         "data/ir_cron.xml",
     ],
     "installable": True,
+    "development_status": "Alpha",
     "application": True,
 }
