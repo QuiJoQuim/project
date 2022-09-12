@@ -72,14 +72,19 @@ class ProjectTask(models.Model):
             [("res_id", "in", self.ids), ("res_model", "=", self._name)]
         ).unlink()
         for task in self:
-            forecast_type = "forecast"
             if not task.forecast_role_id:
                 _logger.info("skip task %s: no forecast role", task)
                 continue
-            if task.sale_line_id:
+            elif task.project_id.project_status:
+                forecast_type = task.project_id.project_status.forecast_line_type
+                if not forecast_type:
+                    _logger.info("skip task %s: no forecast for project state", task)
+                    continue  # closed / cancelled stage
+            elif task.sale_line_id:
                 sale_state = task.sale_line_id.state
                 if sale_state == "cancel":
                     _logger.info("skip task %s: cancelled sale", task)
+                    continue
                 elif sale_state == "sale":
                     forecast_type = "confirmed"
                 else:
