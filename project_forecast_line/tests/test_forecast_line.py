@@ -4,11 +4,11 @@ from datetime import date
 
 from freezegun import freeze_time
 
-from odoo.tests.common import Form, TransactionCase, tagged
+from odoo.tests.common import Form, SavepointCase, tagged
 
 
 @tagged("-at_install", "post_install")
-class BaseForecastLineTest(TransactionCase):
+class BaseForecastLineTest(SavepointCase):
     @classmethod
     @freeze_time("2022-01-01")
     def setUpClass(cls):
@@ -369,6 +369,10 @@ class TestForecastLineSales(BaseForecastLineTest):
         so.action_confirm()
         line = so.order_line[0]
         task = self.env["project.task"].search([("sale_line_id", "=", line.id)])
+        # Give a project_status to the project
+        task.project_id.project_status = self.env.ref(
+            "project_status.project_status_in_progress"
+        )
         forecast_lines = self.env["forecast.line"].search(
             [("res_id", "=", task.id), ("res_model", "=", "project.task")]
         )
@@ -409,6 +413,10 @@ class TestForecastLineTimesheet(BaseForecastLineTest):
         with freeze_time("2022-02-14"):
             line = so.order_line[0]
             task = self.env["project.task"].search([("sale_line_id", "=", line.id)])
+            # Give a project_status to the project
+            task.project_id.project_status = self.env.ref(
+                "project_status.project_status_in_progress"
+            )
             # timesheet 1d
             self.env["account.analytic.line"].create(
                 {
@@ -530,8 +538,8 @@ class TestForecastLineProject(BaseForecastLineTest):
         #
         # Projet 1 is in TODO (not confirmed forecast)
         project_1 = self.env["project.project"].create({"name": "TestProject1"})
-        # set project in stage "to do" to get forecast
-        project_1.stage_id = self.env.ref("project.project_project_stage_0")
+        # set project in stage "Pending" to get confirmed forecast
+        project_1.project_status = self.env.ref("project_status.project_status_pending")
         task_values = {
             "project_id": project_1.id,
             "forecast_role_id": self.role_consultant.id,
@@ -541,20 +549,22 @@ class TestForecastLineProject(BaseForecastLineTest):
         }
         task_values.update({"name": "Task1"})
         task_1 = self.env["project.task"].create(task_values)
-        task_1.user_ids = self.user_consultant
+        task_1.user_id = self.user_consultant
         task_values.update({"name": "Task2"})
         task_2 = self.env["project.task"].create(task_values)
-        task_2.user_ids = self.user_consultant
+        task_2.user_id = self.user_consultant
 
         # Project 2 is in stage "in progress" to get forecast
         project_2 = self.env["project.project"].create({"name": "TestProject2"})
-        project_2.stage_id = self.env.ref("project.project_project_stage_1")
+        project_2.project_status = self.env.ref(
+            "project_status.project_status_in_progress"
+        )
         task_values.update({"project_id": project_2.id, "name": "Task3"})
         task_3 = self.env["project.task"].create(task_values)
-        task_3.user_ids = self.user_consultant
+        task_3.user_id = self.user_consultant
         task_values.update({"name": "Task4"})
         task_4 = self.env["project.task"].create(task_values)
-        task_4.user_ids = self.user_consultant
+        task_4.user_id = self.user_consultant
 
         # check forecast lines
         forecast = self.env["forecast.line"].search(
