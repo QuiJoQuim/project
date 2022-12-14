@@ -24,6 +24,9 @@ class HrEmployee(models.Model):
         # can"t store as it depends on current date
         today = fields.Date.context_today(self)
         for rec in self:
+            if not hasattr(rec, 'role_ids'):
+                rec.main_role_id = None
+                continue
             rec.main_role_id = rec.role_ids.filtered(
                 lambda r: r.date_start <= today
                 and not r.date_end
