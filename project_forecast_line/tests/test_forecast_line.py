@@ -517,7 +517,9 @@ class TestForecastLineProjectReschedule(BaseForecastLineTest):
         ProjectTask = cls.env["project.task"].with_context(tracking_disable=1)
         project = ProjectProject.create({"name": "TestProjectReschedule"})
         # set project in stage "in progress" to get confirmed forecast
-        project.stage_id = cls.env.ref("project.project_project_stage_1")
+        project.project_status = cls.env.ref(
+            "project_status.project_status_in_progress"
+        )
         with freeze_time("2022-02-01 12:00:00"):
             cls.task = ProjectTask.create(
                 {
@@ -545,7 +547,7 @@ class TestForecastLineProjectReschedule(BaseForecastLineTest):
     @freeze_time("2022-02-01 12:00:00")
     def test_task_forecast_line_reschedule_employee(self):
         """changing the employee will create new lines"""
-        self.task.user_ids = self.user_consultant
+        self.task.user_id = self.user_consultant
         task_forecast = self.env["forecast.line"].search(
             [("task_id", "=", self.task.id)]
         )
@@ -588,7 +590,7 @@ class TestForecastLineProjectReschedule(BaseForecastLineTest):
     @freeze_time("2022-02-01 12:00:00")
     def test_task_forecast_line_reschedule_time(self):
         """changing the remaining time will keep the forecast lines"""
-        self.task.user_ids = self.user_consultant
+        self.task.user_id = self.user_consultant
         self.task.flush()
         task_forecast = self.env["forecast.line"].search(
             [("task_id", "=", self.task.id)]
@@ -673,7 +675,7 @@ class TestForecastLineProject(BaseForecastLineTest):
         # 1 day, assigned to the consultant
         #
         # Projet 1 is in TODO (not confirmed forecast)
-        project_1 = self.env["project.project"].create({"name": "TestProject1"})
+        project_1 = ProjectProject.create({"name": "TestProject1"})
         # set project in stage "Pending" to get confirmed forecast
         project_1.project_status = self.env.ref("project_status.project_status_pending")
         project_1.flush()
@@ -685,22 +687,22 @@ class TestForecastLineProject(BaseForecastLineTest):
             "planned_hours": 8,
         }
         task_values.update({"name": "Task1"})
-        task_1 = self.env["project.task"].create(task_values)
+        task_1 = ProjectTask.create(task_values)
         task_1.user_id = self.user_consultant
         task_values.update({"name": "Task2"})
-        task_2 = self.env["project.task"].create(task_values)
+        task_2 = ProjectTask.create(task_values)
         task_2.user_id = self.user_consultant
 
         # Project 2 is in stage "in progress" to get forecast
-        project_2 = self.env["project.project"].create({"name": "TestProject2"})
+        project_2 = ProjectProject.create({"name": "TestProject2"})
         project_2.project_status = self.env.ref(
             "project_status.project_status_in_progress"
         )
         task_values.update({"project_id": project_2.id, "name": "Task3"})
-        task_3 = self.env["project.task"].create(task_values)
+        task_3 = ProjectTask.create(task_values)
         task_3.user_id = self.user_consultant
         task_values.update({"name": "Task4"})
-        task_4 = self.env["project.task"].create(task_values)
+        task_4 = ProjectTask.create(task_values)
         task_4.user_id = self.user_consultant
         # check forecast lines
         forecast = self.env["forecast.line"].search(
@@ -794,7 +796,7 @@ class TestForecastLineProject(BaseForecastLineTest):
                 "project_status.project_status_in_progress"
             )
             project.flush()
-            task = self.env["project.task"].create(
+            task = ProjectTask.create(
                 {
                     "name": "Task1",
                     "project_id": project.id,
@@ -925,7 +927,7 @@ class TestForecastLineProject(BaseForecastLineTest):
             "project_status.project_status_in_progress"
         )
         project.flush()
-        task = self.env["project.task"].create(
+        task = ProjectTask.create(
             {
                 "name": "TaskDiffRoles",
                 "project_id": project.id,
@@ -996,7 +998,7 @@ class TestForecastLineProject(BaseForecastLineTest):
             "project_status.project_status_in_progress"
         )
         project.flush()
-        task = self.env["project.task"].create(
+        task = ProjectTask.create(
             {
                 "name": "TaskDiffRoles",
                 "project_id": project.id,
