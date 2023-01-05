@@ -48,7 +48,12 @@ class HrEmployee(models.Model):
             job = self.env["hr.job"].browse(new_job_id)
             if job.role_id and "role_ids" not in values:
                 values = values.copy()
-                values["role_ids"] = [(6, 0, job.role_id.ids)]
+                # Retrieve all hr.employee.forecast.role records
+                # with job.role_id
+                role_ids = self.env["hr.employee.forecast.role"].search(
+                    [("role_id", "=", job.role_id.id)]
+                )
+                values["role_ids"] = [(6, 0, role_ids.ids)]
         return values
 
 
