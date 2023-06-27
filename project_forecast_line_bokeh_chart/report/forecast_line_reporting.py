@@ -1,5 +1,6 @@
 # Copyright 2022 Camptocamp SA
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+import datetime
 
 # pylint: disable=W7936
 from bokeh import palettes
@@ -182,10 +183,14 @@ class ForecastLineReporting(models.TransientModel):
             plot_data_overload = {"dates": dates}
             for project in data[employee]:
                 forecast = data[employee][project]
-                plot_data[project] = [forecast.get(date, 0) for date in dates]
+                plot_data[project] = [
+                    forecast.get(self._format_date(date), 0) for date in dates
+                ]
             for project in data_overload[employee]:
                 forecast = data_overload[employee][project]
-                plot_data_overload[project] = [forecast.get(date, 0) for date in dates]
+                plot_data_overload[project] = [
+                    forecast.get(self._format_date(date), 0) for date in dates
+                ]
             plot_projects = [
                 p
                 for p in projects
@@ -217,3 +222,11 @@ class ForecastLineReporting(models.TransientModel):
             p.add_layout(p.legend[0], "right")
             plots.append(p)
         return plots
+
+    def _format_date(self, date):
+        if not date:
+            return ""
+        granularity = {"day": "%d %b %Y", "week": "W%W %Y", "month": "%B %Y"}
+        return datetime.datetime.strptime(date, "%Y-%m-%d").strftime(
+            granularity[self.granularity]
+        )
