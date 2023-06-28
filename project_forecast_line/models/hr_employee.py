@@ -15,9 +15,16 @@ class HrJob(models.Model):
 class HrEmployee(models.Model):
     _inherit = "hr.employee"
 
-    role_ids = fields.One2many("hr.employee.forecast.role", "employee_id")
+    role_ids = fields.One2many(
+        "hr.employee.forecast.role",
+        "employee_id",
+        groups="hr.group_hr_user",
+    )
     main_role_id = fields.Many2one(
-        "forecast.role", compute="_compute_main_role_id", ondelete="restrict"
+        "forecast.role",
+        compute="_compute_main_role_id",
+        ondelete="restrict",
+        groups="hr.group_hr_user",
     )
 
     def _compute_main_role_id(self):
