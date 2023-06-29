@@ -21,10 +21,8 @@ class HrEmployee(models.Model):
         groups="hr.group_hr_user",
     )
     main_role_id = fields.Many2one(
-        "forecast.role",
-        compute="_compute_main_role_id",
-        ondelete="restrict",
-        groups="hr.group_hr_user",
+        "forecast.role", compute="_compute_main_role_id", ondelete="restrict",
+        compute_sudo=True
     )
 
     def _compute_main_role_id(self):
