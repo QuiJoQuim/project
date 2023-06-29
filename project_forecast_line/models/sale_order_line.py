@@ -8,7 +8,8 @@ _logger = logging.getLogger(__name__)
 
 
 class SaleOrderLine(models.Model):
-    _inherit = "sale.order.line"
+    _name = "sale.order.line"
+    _inherit = ["sale.order.line", "forecast.line.mixin"]
 
     forecast_date_start = fields.Date()
     forecast_date_end = fields.Date()
@@ -44,7 +45,7 @@ class SaleOrderLine(models.Model):
             quantity_hours = uom._compute_quantity(
                 line.product_uom_qty, self.env.ref("uom.product_uom_hour")
             )
-            forecast_vals += ForecastLine.prepare_forecast_lines(
+            forecast_vals += ForecastLine._prepare_forecast_lines(
                 name=line.name,
                 date_from=line.forecast_date_start,
                 date_to=line.forecast_date_end,
@@ -85,11 +86,10 @@ class SaleOrderLine(models.Model):
             "name",
         ]
 
-    def write(self, values):
-        res = super().write(values)
-        written_fields = list(values.keys())
+    def _write(self, values):
+        res = super()._write(values)
         trigger_fields = self._update_forecast_lines_trigger_fields()
-        if any(field in written_fields for field in trigger_fields):
+        if any(field in values for field in trigger_fields):
             self._update_forecast_lines()
         return res
 
