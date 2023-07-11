@@ -548,11 +548,12 @@ class TestForecastLineProjectReschedule(BaseForecastLineTest):
     def test_task_forecast_line_reschedule_employee(self):
         """changing the employee will create new lines"""
         self.task.user_id = self.user_consultant
+        self.task.flush()
         task_forecast = self.env["forecast.line"].search(
             [("task_id", "=", self.task.id)]
         )
         self.assertEqual(task_forecast.mapped("employee_id"), self.employee_consultant)
-        self.task.user_ids = self.user_pm
+        self.task.user_id = self.user_pm
         self.task.flush()
         task_forecast_after = self.env["forecast.line"].search(
             [("task_id", "=", self.task.id)]
@@ -689,9 +690,11 @@ class TestForecastLineProject(BaseForecastLineTest):
         task_values.update({"name": "Task1"})
         task_1 = ProjectTask.create(task_values)
         task_1.user_id = self.user_consultant
+        task_1.flush()
         task_values.update({"name": "Task2"})
         task_2 = ProjectTask.create(task_values)
         task_2.user_id = self.user_consultant
+        task_2.flush()
 
         # Project 2 is in stage "in progress" to get forecast
         project_2 = ProjectProject.create({"name": "TestProject2"})
@@ -701,9 +704,11 @@ class TestForecastLineProject(BaseForecastLineTest):
         task_values.update({"project_id": project_2.id, "name": "Task3"})
         task_3 = ProjectTask.create(task_values)
         task_3.user_id = self.user_consultant
+        task_3.flush()
         task_values.update({"name": "Task4"})
         task_4 = ProjectTask.create(task_values)
         task_4.user_id = self.user_consultant
+        task_4.flush()
         # check forecast lines
         forecast = self.env["forecast.line"].search(
             [("task_id", "in", (task_1.id, task_2.id, task_3.id, task_4.id))]
@@ -745,9 +750,11 @@ class TestForecastLineProject(BaseForecastLineTest):
     @freeze_time("2022-01-01 12:00:00")
     def test_forecast_with_holidays(self):
         self.test_task_forecast_lines_consolidated_forecast()
+        holiday_status_unpaid = self.env.ref("hr_holidays.holiday_status_unpaid")
+        holiday_status_unpaid.validity_start = False
         with Form(self.env["hr.leave"].with_context(tracking_disable=1)) as form:
             form.employee_id = self.employee_consultant
-            form.holiday_status_id = self.env.ref("hr_holidays.holiday_status_unpaid")
+            form.holiday_status_id = holiday_status_unpaid
             form.request_date_from = "2022-02-14"
             form.request_date_to = "2022-02-15"
             form.request_hour_from = "8"
@@ -808,6 +815,7 @@ class TestForecastLineProject(BaseForecastLineTest):
             )
             task.remaining_hours = 10
             task.user_id = self.user_consultant
+            task.flush()
             forecast = self.env["forecast.line"].search([("task_id", "=", task.id)])
             self.assertEqual(len(forecast), 1)
             # using assertEqual on purpose here
@@ -854,6 +862,7 @@ class TestForecastLineProject(BaseForecastLineTest):
             )
             task1.remaining_hours = 10
             task1.user_id = self.user_consultant
+            task1.flush()
             forecast1 = self.env["forecast.line"].search([("task_id", "=", task1.id)])
             self.assertEqual(len(forecast1), 1)
             task2 = ProjectTask.create(
@@ -868,6 +877,7 @@ class TestForecastLineProject(BaseForecastLineTest):
             )
             task2.remaining_hours = 4
             task2.user_id = self.user_consultant
+            task2.flush()
             forecast2 = self.env["forecast.line"].search([("task_id", "=", task2.id)])
             forecast2.type = "confirmed"
             # using assertEqual on purpose here
@@ -938,6 +948,7 @@ class TestForecastLineProject(BaseForecastLineTest):
             }
         )
         task.user_id = self.user_consultant
+        task.flush()
         task_forecast = self.env["forecast.line"].search([("task_id", "=", task.id)])
         self.assertEqual(len(task_forecast), 1)
         # using assertEqual on purpose here
@@ -1009,6 +1020,7 @@ class TestForecastLineProject(BaseForecastLineTest):
             }
         )
         task.user_id = self.user_consultant
+        task.flush()
         task_forecast = self.env["forecast.line"].search([("task_id", "=", task.id)])
         self.assertEqual(len(task_forecast), 1)
         # using assertEqual on purpose here
