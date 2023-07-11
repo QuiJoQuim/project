@@ -63,6 +63,9 @@ class ProjectTask(models.Model):
 
     def _write(self, values):
         res = super()._write(values)
+        if self.env.context.get("project_forecast_line_task_noloop"):
+            return res
+        self = self.with_context(project_forecast_line_task_noloop=True)
         if "forecast_recomputation_trigger" in values:
             self._update_forecast_lines()
         elif "remaining_hours" in values:
