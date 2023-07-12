@@ -762,7 +762,7 @@ class TestForecastLineProject(BaseForecastLineTest):
             form.request_hour_to = "18"
         leave_request = form.save()
         # validating the leave request will recompute the forecast lines for
-        # the employee capactities (actually delete the existing ones and
+        # the employee capacities (actually delete the existing ones and
         # create new ones -> we check that the project task lines are
         # automatically related to the new newly created employee role lines.
         leave_request.action_validate()

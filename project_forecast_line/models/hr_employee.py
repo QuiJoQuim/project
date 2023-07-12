@@ -88,7 +88,8 @@ class HrEmployeeForecastRole(models.Model):
 
     def write(self, values):
         res = super().write(values)
-        self._update_forecast_lines()
+        if not self.env.context.get("pfl_no_role_loop"):
+            self.with_context(pfl_no_role_loop=True)._update_forecast_lines()
         return res
 
     def _update_forecast_lines(self):
@@ -98,14 +99,15 @@ class HrEmployeeForecastRole(models.Model):
         ForecastLine = self.env["forecast.line"].sudo()
         if not self:
             return ForecastLine
-        leaves = self.env["hr.leave"].search(
-            [
-                ("employee_id", "in", self.mapped("employee_id").ids),
-                ("state", "!=", "cancel"),
-                ("date_to", ">=", min(self.mapped("date_start"))),
-            ]
-        )
-        leaves._update_forecast_lines()
+        if not self.env.context.get("dont_circle_back_on_leaves"):
+            leaves = self.env["hr.leave"].search(
+                [
+                    ("employee_id", "in", self.mapped("employee_id").ids),
+                    ("state", "!=", "cancel"),
+                    ("date_to", ">=", min(self.mapped("date_start"))),
+                ]
+            )
+            leaves._update_forecast_lines()
         forecast_vals = []
         ForecastLine.search(
             [
