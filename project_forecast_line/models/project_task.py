@@ -89,6 +89,8 @@ class ProjectTask(models.Model):
         # can only update the forecast lines by applying a ratio
         ForecastLine = self.env["forecast.line"].sudo()
         for task in self:
+            # cannot fail if access to a model, such as project_status, not present
+            task = task.sudo()
             forecast_lines = ForecastLine.search(
                 [("res_model", "=", self._name), ("res_id", "=", task.id)]
             )
@@ -143,6 +145,7 @@ class ProjectTask(models.Model):
         ForecastLine = self.env["forecast.line"].sudo()
         task_with_lines_to_clean = []
         for task in self:
+            task = task.sudo()
             if not task._should_have_forecast():
                 task_with_lines_to_clean.append(task.id)
                 continue
