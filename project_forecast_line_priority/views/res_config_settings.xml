@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field
+            name="name"
+        >res.config.settings.view.form.inherit.forecast.priority</field>
+        <field name="model">res.config.settings</field>
+        <field
+            name="inherit_id"
+            ref="project_forecast_line.res_config_settings_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@data-string='Forecast']" position="inside">
+                <div>
+                    <h2>Forecast Task Priority Management</h2>
+                    <div
+                        class="row mt16 o_settings_container"
+                        id="forecast_priority_management"
+                    >
+                        <div
+                            class="col-12 col-lg-6 o_setting_box"
+                            id="forecast_line_priority_settings"
+                        >
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Priority 1</span>
+                                <span class="fa fa-lg fa-star" role="img" />
+                                <div class="text-muted">
+                                    Set Forecast End Date
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16 row">
+                                        <field
+                                            name="forecast_line_priority_1_date"
+                                            class="oe_inline"
+                                        />
+                                    </div>
+                                    <div class="mt16 row">
+                                        <label
+                                            for="forecast_line_priority_1_date_str"
+                                            string="Current:"
+                                            class="col-3 col-lg-3 o_light_label"
+                                        />
+                                        <field
+                                            name="forecast_line_priority_1_date_str"
+                                            readonly="1"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Priority 2</span>
+                                <span class="fa fa-lg fa-star" role="img" />
+                                <div class="text-muted">
+                                    Set timedelta in days
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16 row">
+                                        <field
+                                            name="forecast_line_priority_2"
+                                            class="oe_inline"
+                                            required="1"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Priority 3</span>
+                                <span class="fa fa-lg fa-star" role="img" />
+                                <div class="text-muted">
+                                    Set timedelta in days
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16 row">
+                                        <field
+                                            name="forecast_line_priority_3"
+                                            class="oe_inline"
+                                            required="1"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
