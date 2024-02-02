@@ -24,58 +24,102 @@
                             <div class="o_setting_right_pane">
                                 <span class="o_form_label">Priority 1</span>
                                 <span class="fa fa-lg fa-star" role="img" />
-                                <div class="text-muted">
-                                    Set Forecast End Date
-                                </div>
                                 <div class="content-group">
                                     <div class="mt16 row">
                                         <field
-                                            name="forecast_line_priority_1_date"
-                                            class="oe_inline"
-                                        />
-                                    </div>
-                                    <div class="mt16 row">
-                                        <label
-                                            for="forecast_line_priority_1_date_str"
-                                            string="Current:"
-                                            class="col-3 col-lg-3 o_light_label"
+                                            name="forecast_line_priority_1_selection"
                                         />
                                         <field
-                                            name="forecast_line_priority_1_date_str"
-                                            readonly="1"
+                                            name="forecast_line_priority_1"
+                                            class="oe_inline"
+                                            attrs="{'invisible': [('forecast_line_priority_1_selection','!=', 'delta')]}"
                                         />
+                                        <field
+                                            name="forecast_line_priority_1_date"
+                                            class="oe_inline"
+                                            attrs="{'invisible': [('forecast_line_priority_1_selection','!=', 'date')]}"
+                                            placeholder="Set Date"
+                                        />
+                                        <div
+                                            attrs="{'invisible': [('forecast_line_priority_1_selection','!=', 'date')]}"
+                                        >
+                                        <label
+                                                for="forecast_line_priority_1_date_str"
+                                                string="Current Date"
+                                            />
+                                        <field
+                                                name="forecast_line_priority_1_date_str"
+                                                readonly="1"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="o_setting_right_pane">
                                 <span class="o_form_label">Priority 2</span>
                                 <span class="fa fa-lg fa-star" role="img" />
-                                <div class="text-muted">
-                                    Set timedelta in days
-                                </div>
                                 <div class="content-group">
                                     <div class="mt16 row">
                                         <field
+                                            name="forecast_line_priority_2_selection"
+                                        />
+                                        <field
                                             name="forecast_line_priority_2"
                                             class="oe_inline"
-                                            required="1"
+                                            attrs="{'invisible': [('forecast_line_priority_2_selection','!=', 'delta')]}"
                                         />
+                                        <field
+                                            name="forecast_line_priority_2_date"
+                                            class="oe_inline"
+                                            attrs="{'invisible': [('forecast_line_priority_2_selection','!=', 'date')]}"
+                                            placeholder="Set Date"
+                                        />
+                                        <div
+                                            attrs="{'invisible': [('forecast_line_priority_2_selection','!=', 'date')]}"
+                                        >
+                                        <label
+                                                for="forecast_line_priority_2_date_str"
+                                                string="Current Date"
+                                            />
+                                        <field
+                                                name="forecast_line_priority_2_date_str"
+                                                readonly="1"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="o_setting_right_pane">
                                 <span class="o_form_label">Priority 3</span>
                                 <span class="fa fa-lg fa-star" role="img" />
-                                <div class="text-muted">
-                                    Set timedelta in days
-                                </div>
                                 <div class="content-group">
                                     <div class="mt16 row">
                                         <field
+                                            name="forecast_line_priority_3_selection"
+                                        />
+                                        <field
                                             name="forecast_line_priority_3"
                                             class="oe_inline"
-                                            required="1"
+                                            attrs="{'invisible': [('forecast_line_priority_3_selection','!=', 'delta')]}"
                                         />
+                                        <field
+                                            name="forecast_line_priority_3_date"
+                                            class="oe_inline"
+                                            attrs="{'invisible': [('forecast_line_priority_3_selection','!=', 'date')]}"
+                                            placeholder="Set Date"
+                                        />
+                                        <div
+                                            attrs="{'invisible': [('forecast_line_priority_3_selection','!=', 'date')]}"
+                                        >
+                                        <label
+                                                for="forecast_line_priority_3_date_str"
+                                                string="Current Date"
+                                            />
+                                        <field
+                                                name="forecast_line_priority_3_date_str"
+                                                readonly="1"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>

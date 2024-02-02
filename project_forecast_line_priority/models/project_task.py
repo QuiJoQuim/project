@@ -15,9 +15,7 @@ class ProjectTask(models.Model):
             return super().write(vals)
         if "priority" not in vals:
             return super().write(vals)
-        config_model = self.env["ir.config_parameter"]
         priority = int(vals.get("priority", 0))
-        today = fields.Date.today()
         for this in self:
             # date deadline is set, so ignore this one
             if this.date_deadline:
@@ -25,20 +23,27 @@ class ProjectTask(models.Model):
             # if priority is 0, do nothing
             if priority < 1:
                 continue
-            if priority == 1:
-                # add weeks to end date
-                vals["forecast_date_planned_end"] = config_model.get_param(
-                    "project_forecast_line_priority.priority_1"
-                )
-            else:
-                # priorities 2 and 3
-                # add days to end date
-                interval = timedelta(
-                    days=int(
-                        config_model.get_param(
-                            "project_forecast_line_priority.priority_%s" % priority
-                        )
+            forecast_date_planned_end = self._get_forecast_date_planned(priority)
+            if forecast_date_planned_end:
+                vals["forecast_date_planned_end"] = forecast_date_planned_end
+        return super().write(vals)
+
+    def _get_forecast_date_planned(self, priority):
+        config_model = self.env["ir.config_parameter"]
+        selection = config_model.get_param(
+            "project_forecast_line_priority.priority_%s_selection" % priority
+        )
+        if selection == "none":
+            return False
+        if selection == "delta":
+            return fields.Date.today() + timedelta(
+                days=int(
+                    config_model.get_param(
+                        "project_forecast_line_priority.priority_%s_delta" % priority
                     )
                 )
-                vals["forecast_date_planned_end"] = today + interval
-        return super().write(vals)
+            )
+        if selection == "date":
+            return config_model.get_param(
+                "project_forecast_line_priority.priority_%s_date" % priority
+            )
