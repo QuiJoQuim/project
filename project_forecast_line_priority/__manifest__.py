@@ -9,6 +9,6 @@
     "category": "Project",
     "website": "https://github.com/OCA/project",
     "depends": ["project_forecast_line_deadline", "project_task_add_very_high"],
-    "data": ["views/res_config_settings.xml"],
+    "data": ["data/ir_actions_server.xml", "views/res_config_settings.xml"],
     "installable": True,
 }

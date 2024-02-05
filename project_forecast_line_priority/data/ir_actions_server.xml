@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <record id="action_project_task_priority" model="ir.actions.server">
+        <field name="name">Project Task: Update forecast date end</field>
+        <field name="model_id" ref="project.model_project_task" />
+        <field name="binding_model_id" ref="project.model_project_task" />
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+        <field name="code">
+        for record in records:
+            new_forecast_date_planned_end = record._get_forecast_date_planned()
+            if new_forecast_date_planned_end:
+                record.write({"forecast_date_planned_end": new_forecast_date_planned_end})
+        </field>
+    </record>
+</odoo>

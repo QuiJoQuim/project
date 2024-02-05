@@ -15,21 +15,24 @@ class ProjectTask(models.Model):
             return super().write(vals)
         if "priority" not in vals:
             return super().write(vals)
-        priority = int(vals.get("priority", 0))
+        priority = vals.get("priority", -5)
         for this in self:
             # date deadline is set, so ignore this one
             if this.date_deadline:
                 continue
-            # if priority is 0, do nothing
-            if priority < 1:
+            # if priority is not set, do nothing
+            if int(priority) < 0:
                 continue
-            forecast_date_planned_end = self._get_forecast_date_planned(priority)
+            forecast_date_planned_end = self._get_forecast_date_planned(
+                priority=priority
+            )
             if forecast_date_planned_end:
                 vals["forecast_date_planned_end"] = forecast_date_planned_end
         return super().write(vals)
 
-    def _get_forecast_date_planned(self, priority):
+    def _get_forecast_date_planned(self, priority=None):
         config_model = self.env["ir.config_parameter"]
+        priority = priority or self.priority
         selection = config_model.get_param(
             "project_forecast_line_priority.priority_%s_selection" % priority
         )

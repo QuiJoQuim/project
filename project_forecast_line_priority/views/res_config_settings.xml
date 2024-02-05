@@ -22,6 +22,40 @@
                             id="forecast_line_priority_settings"
                         >
                             <div class="o_setting_right_pane">
+                                <span class="o_form_label">Priority 0</span>
+                                <span class="fa fa-lg fa-star" role="img" />
+                                <div class="content-group">
+                                    <div class="mt16 row">
+                                        <field
+                                            name="forecast_line_priority_0_selection"
+                                        />
+                                        <field
+                                            name="forecast_line_priority_0"
+                                            class="oe_inline"
+                                            attrs="{'invisible': [('forecast_line_priority_0_selection','!=', 'delta')]}"
+                                        />
+                                        <field
+                                            name="forecast_line_priority_0_date"
+                                            class="oe_inline"
+                                            attrs="{'invisible': [('forecast_line_priority_0_selection','!=', 'date')]}"
+                                            placeholder="Set Date"
+                                        />
+                                        <div
+                                            attrs="{'invisible': [('forecast_line_priority_0_selection','!=', 'date')]}"
+                                        >
+                                        <label
+                                                for="forecast_line_priority_0_date_str"
+                                                string="Current Date"
+                                            />
+                                        <field
+                                                name="forecast_line_priority_0_date_str"
+                                                readonly="1"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_setting_right_pane">
                                 <span class="o_form_label">Priority 1</span>
                                 <span class="fa fa-lg fa-star" role="img" />
                                 <div class="content-group">
