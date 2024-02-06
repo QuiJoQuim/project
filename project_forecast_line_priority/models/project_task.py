@@ -8,6 +8,16 @@ from odoo import fields, models
 class ProjectTask(models.Model):
     _inherit = "project.task"
 
+    def _update_forecast_lines(self):
+        """Override cron method"""
+        for this in self:
+            forecast_date_planned_end = this._get_forecast_date_planned()
+            if not forecast_date_planned_end:
+                continue
+            # and recompute end date for forecast
+            this.forecast_date_planned_end = forecast_date_planned_end
+        return super()._update_forecast_lines()
+
     def write(self, vals):
         """Set forecast_date_planned_end based on priority"""
         # If user sets end date manually
@@ -26,11 +36,13 @@ class ProjectTask(models.Model):
             forecast_date_planned_end = self._get_forecast_date_planned(
                 priority=priority
             )
-            if forecast_date_planned_end:
-                vals["forecast_date_planned_end"] = forecast_date_planned_end
+            if not forecast_date_planned_end:
+                continue
+            vals["forecast_date_planned_end"] = forecast_date_planned_end
         return super().write(vals)
 
     def _get_forecast_date_planned(self, priority=None):
+        """Update forecast date end based on priority"""
         config_model = self.env["ir.config_parameter"]
         priority = priority or self.priority
         selection = config_model.get_param(
