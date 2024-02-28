@@ -38,6 +38,10 @@ class ForecastLine(models.Model):
                 if group.get(df):
                     range_from, range_to = group[df][0].split("/")
                     group["__range"][field_name] = {"from": range_from, "to": range_to}
+                    # Inject another date key in the result
+                    # for easier retrieval later on
+                    group["forecast_date_start"] = range_from
                 else:
                     group["__range"][field_name] = False
+                    group["forecast_date_start"] = False
         return result
