@@ -3,7 +3,7 @@
 {
     "name": "Project Forecast Line Priority",
     "summary": "Project Forecast Line dates according to task priority",
-    "version": "15.0.1.0.0",
+    "version": "16.0.1.0.0",
     "author": "Therp BV, Odoo Community Association (OCA)",
     "maintainers": ["ntsirintanis"],
     "license": "AGPL-3",

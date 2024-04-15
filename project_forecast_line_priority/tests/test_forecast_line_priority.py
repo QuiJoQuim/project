@@ -9,7 +9,7 @@ from odoo import fields
 class TestForecastLinePriotity(common.TransactionCase):
     def setUp(self):
         super().setUp()
-        self.project_task = self.env.ref("project.project_task_1")
+        self.project_task = self.env.ref("project.project_1_task_1")
         self.company_1 = self.env.company
         self.company_2 = self.env["res.company"].create({"name": "Another Company"})
         self.company_1.write(
