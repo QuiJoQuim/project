@@ -7,14 +7,13 @@ import odoo.tests.common as common
 class TestForecastLineMilestone(common.TransactionCase):
     def setUp(self):
         super().setUp()
-        self.project_task = self.env.ref("project.project_task_1")
+        self.project_task = self.env.ref("project.project_1_task_1")
         self.project = self.project_task.project_id
-        self.project.use_milestones = True
         self.project_milestone = self.env["project.milestone"].create(
             {
                 "name": "a milestone",
                 "project_id": self.project.id,
-                "project_task_ids": [(4, self.project_task.id)],
+                "task_ids": [(4, self.project_task.id)],
             }
         )
         self.env.company.write(
@@ -33,17 +32,17 @@ class TestForecastLineMilestone(common.TransactionCase):
         # See that relevant date fields are falsy
         self.assertFalse(task.forecast_date_planned_end)
         self.assertFalse(task.date_deadline)
-        self.assertFalse(milestone.target_date)
+        self.assertFalse(milestone.deadline)
         # Set deadline for task
         task.date_deadline = "2022-01-01"
         # Date fields are equal
         self.assertEqual(task.forecast_date_planned_end, task.date_deadline)
-        # Set target_date for milestone
-        milestone.target_date = "2050-01-01"
+        # Set deadline for milestone
+        milestone.deadline = "2050-01-01"
         # forecast end is now milestone end
-        self.assertEqual(task.forecast_date_planned_end, milestone.target_date)
+        self.assertEqual(task.forecast_date_planned_end, milestone.deadline)
         # Reset deadline and change priority
         task.date_deadline = False
         task.priority = "2"
         # nothing changes
-        self.assertEqual(task.forecast_date_planned_end, milestone.target_date)
+        self.assertEqual(task.forecast_date_planned_end, milestone.deadline)

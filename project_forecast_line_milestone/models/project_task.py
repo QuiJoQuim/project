@@ -10,22 +10,22 @@ class ProjectTask(models.Model):
         """Returns a list of fields to trigger recomputation"""
         return super()._forecast_date_planned_end_depends_list() + [
             "milestone_id",
-            "milestone_id.target_date",
+            "milestone_id.deadline",
         ]
 
     @api.depends(_forecast_date_planned_end_depends_list)
     def _compute_forecast_date_planned_end(self):
-        """Override method to use milestone_id.target_date"""
+        """Override method to use milestone_id.deadline"""
         res = super()._compute_forecast_date_planned_end()
         for this in self:
-            if not this.milestone_id.target_date:
+            if not this.milestone_id.deadline:
                 continue
-            this.forecast_date_planned_end = this.milestone_id.target_date
+            this.forecast_date_planned_end = this.milestone_id.deadline
         return res
 
     def _get_forecast_date_planned(self, priority=None):
         """Do not set forecast end if there exists a milestone date"""
         self.ensure_one()
-        if self.milestone_id.target_date:
+        if self.milestone_id.deadline:
             return False
         return super()._get_forecast_date_planned(priority=priority)
